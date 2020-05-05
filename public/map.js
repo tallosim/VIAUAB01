@@ -7,6 +7,11 @@ var layerIDs = [];
 const a_icon = L.icon({ iconUrl: "a.png", iconSize: [30, 30], iconAnchor: [15, 30] });
 const b_icon = L.icon({ iconUrl: "b.png", iconSize: [30, 30], iconAnchor: [15, 30] });
 
+var from_marker = new L.Marker(L.latLng(90, 0), { icon: a_icon });
+map.addLayer(from_marker);
+
+var to_marker = new L.Marker(L.latLng(90, 0), { icon: b_icon });
+map.addLayer(to_marker);
 //addRoute();
 
 function loadJSON(callback) {
@@ -74,6 +79,8 @@ function addRoute() {
         bounds.extend(geoJSON.getBounds());
       }
     });
+    setAIcon(L.latLng(json.data.plan.from.lat, json.data.plan.from.lon));
+    setBIcon(L.latLng(json.data.plan.to.lat, json.data.plan.to.lon));
     loadingHide();
     map.flyToBounds(bounds, { paddingTopLeft: L.point(350, 0), duration: 0.5 });
   });
@@ -104,26 +111,26 @@ function reverse() {
   //removeRoute();
 }
 
-var from_marker = new L.Marker(L.latLng(90, 0), { icon: a_icon });
-map.addLayer(from_marker);
+function setAIcon(latlng){
+  map.removeLayer(from_marker);
+  from_marker = new L.Marker(latlng, { icon: a_icon });
+  map.addLayer(from_marker);
+  document.getElementById("planner-from").value = ((Math.round(latlng.lat + "e+6") / 1000000) + "," + (Math.round(latlng.lng + "e+6") / 1000000));
+}
+
+function setBIcon(latlng){
+  map.removeLayer(to_marker);
+  to_marker = new L.Marker(latlng, { icon: b_icon });
+  map.addLayer(to_marker);
+  document.getElementById("planner-to").value = ((Math.round(latlng.lat + "e+6") / 1000000) + "," + (Math.round(latlng.lng + "e+6") / 1000000));
+}
 
 map.on('click', function (e) {
-  map.removeLayer(from_marker);
-  from_marker = new L.Marker(e.latlng, { icon: a_icon });
-  map.addLayer(from_marker);
-  document.getElementById("planner-from").value = ((Math.round(e.latlng.lat + "e+6") / 1000000) + "," + (Math.round(e.latlng.lng + "e+6") / 1000000));
-
+  setAIcon(e.latlng);
   removeRoute();
 });
 
-var to_marker = new L.Marker(L.latLng(90, 0), { icon: b_icon });
-map.addLayer(to_marker);
-
 map.on('contextmenu', function (e) {
-  map.removeLayer(to_marker);
-  to_marker = new L.Marker(e.latlng, { icon: b_icon });
-  map.addLayer(to_marker);
-  document.getElementById("planner-to").value = ((Math.round(e.latlng.lat + "e+6") / 1000000) + "," + (Math.round(e.latlng.lng + "e+6") / 1000000));
-
+  setBIcon(e.latlng);
   removeRoute();
 });
