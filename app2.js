@@ -20,7 +20,7 @@ app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/public/index.html'));
 });
 
-app.get('/test.json', function(req, res) {
+app.get('/response.json', function(req, res) {
     //console.log(req.url);
     //console.log(req.query);
     api_test.MakeJSON(req.query, function(JSON) { res.send(JSON); });

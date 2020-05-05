@@ -17,7 +17,7 @@ function loadJSON(callback) {
 
   var xobj = new XMLHttpRequest();
   xobj.overrideMimeType("application/json");
-  xobj.open("GET", "test.json?" + queryString, true);
+  xobj.open("GET", "response.json?" + queryString, true);
   xobj.onreadystatechange = function () {
     if (xobj.readyState == 4 && xobj.status == "200") {
       callback(xobj.responseText);
@@ -32,39 +32,44 @@ function addRoute() {
   loadJSON(function (response) {
     var json = JSON.parse(response);
     var bounds = L.latLngBounds();
-    json.datas.forEach(element => {
-      if (element.type == "Walk") {
-        var walk = element;
-        walk.type = "LineString";
-        walk.style["weight"] = 6;
-        walk.style["dashArray"] = "5, 10";
 
-        var geoJSON = L.geoJSON(walk, { style: walk.style }).addTo(layerGroup);
+    var itinerary = json.data.plan.itineraries[0];
+    
+    itinerary.steps.forEach(element => {
+      if (element.mode == "WALK") {
+        var walk = {"type": "LineString", "coordinates": []};
+        walk.coordinates = element.geometry;
+        var style = {"color": "#888888", "weight": 6, "dashArray": "5, 10"};
+        var geoJSON = L.geoJSON(walk, { style: style }).addTo(layerGroup);
         layerIDs.push(L.stamp(geoJSON));
         bounds.extend(geoJSON.getBounds());
       }
     });
-    json.datas.forEach(element => {
-      if (element.type == "Route") {
-        var route = element;
-        route.type = "LineString";
-        route.style["weight"] = 6;
 
-        var geoJSON = L.geoJSON(route, { style: route.style }).addTo(layerGroup);
+    itinerary.steps.forEach(element => {
+      if (element.mode == "RAIL" || element.mode == "BUS" || element.mode == "TRAM" || element.mode == "TROLLEYBUS" || element.mode == "SUBWAY") {
+        var route = {"type": "LineString", "coordinates": []};
+        route.coordinates = element.geometry;
+        var routeStyle = {"color": "", "weight": 6};
+        routeStyle.color = element.routeColor;
+        var geoJSON = L.geoJSON(route, { style: routeStyle }).addTo(layerGroup);
         layerIDs.push(L.stamp(geoJSON));
         bounds.extend(geoJSON.getBounds());
-      }
-    });
-    json.datas.forEach(element => {
-      if (element.type == "Stops") {
-        var stops = element;
-        stops.type = "MultiPoint";
-        stops.style["fillColor"] = "#FFFFFF";
-        stops.style["radius"] = 7;
-        stops.style["weight"] = 3;
-        stops.style["fillOpacity"] = 1;
 
-        var geoJSON = L.geoJSON(stops, { pointToLayer: function (feature, latlng) { return L.circleMarker(latlng, stops.style); } }).addTo(layerGroup);
+        var endStops = {"type": "MultiPoint", "coordinates": []};
+        endStops.coordinates.push([element.from.lon, element.from.lat]);
+        endStops.coordinates.push([element.to.lon, element.to.lat]);
+        var endStopsStyle = {"color": "", "radius": 7, "weight": 3, "fillColor": "#FFFFFF", "fillOpacity": 1};
+        endStopsStyle.color = element.routeColor;
+        var geoJSON = L.geoJSON(endStops, { pointToLayer: function (feature, latlng) { return L.circleMarker(latlng, endStopsStyle); } }).addTo(layerGroup);
+        layerIDs.push(L.stamp(geoJSON));
+        bounds.extend(geoJSON.getBounds());
+
+        var stops = {"type": "MultiPoint", "coordinates": []};
+        stops.coordinates = element.stops;
+        var stopsStyle = {"color": "", "radius": 4, "weight": 2, "fillColor": "#FFFFFF", "fillOpacity": 1};
+        stopsStyle.color = element.routeColor;
+        var geoJSON = L.geoJSON(stops, { pointToLayer: function (feature, latlng) { return L.circleMarker(latlng, stopsStyle); } }).addTo(layerGroup);
         layerIDs.push(L.stamp(geoJSON));
         bounds.extend(geoJSON.getBounds());
       }
@@ -73,6 +78,7 @@ function addRoute() {
     map.flyToBounds(bounds, { paddingTopLeft: L.point(350, 0), duration: 0.5 });
   });
 }
+
 
 function removeRoute() {
   layerIDs.forEach(element => { layerGroup.removeLayer(element); });
