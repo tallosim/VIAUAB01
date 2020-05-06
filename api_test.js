@@ -93,6 +93,7 @@ function MakeJSON(query, callback) {
                         "headsign": "",
                         "route": "",
                         "routeColor": "",
+                        "routeTextColor": "",
                         "from": {},
                         "to": {},
                         "stops": [],
@@ -106,9 +107,11 @@ function MakeJSON(query, callback) {
                     route.headsign = leg.headsign;
                     route.route = leg.route;
                     route.routeColor = "#" + leg.routeColor;
+                    route.routeTextColor = "#" + leg.routeTextColor;
                     route.from = leg.from;
                     route.to = leg.to;
 
+                    if (route.routeColor == "#1E1E1E") {route.mode = "NIGHTBUS";}
                     // MySQLSelectStops(leg.tripId.substr(4), leg.from.stopIndex, leg.to.stopIndex, function (results) {
                     //     console.log(results);
                     // });

@@ -53,26 +53,14 @@
                     <script>var date = new Date(); document.getElementById("planner-date").valueAsDate = date; document.getElementById("planner-time").value = date.getHours() + ":" + date.getMinutes();</script>
                 </div>
                 <div class="start-planning">
-                    <input type="button" value="Tervezés" id="start-planning" onclick="addRoute()">
+                    <input type="button" value="Tervezés" id="start-planning" onclick="makeRequest()">
                 </div>
             </form>
         </div>
         <div class="results">
             <label>Lehetséges útvonalak:</label><br>
             <div class="results-context">
-                <div class="itineraries">
-                    <div class="itinerary">
-                        <div class="span-itinerary">
-                            <p class="p-itinerary">17:55 ⇒ 18:42, 569 m séta <span class="right">47p</span></p>
-                            <ul class="route-list">
-                                <li><span class="walk"></span></li>
-                                <li><span class="arrow"></span><span class="rail"></span><span class="route-label-box-circle">5</span></li>
-                                <li><span class="arrow"></span><span class="walk"></span></li>
-                                <li><span class="arrow"></span><span class="tram"></span><span class="route-label-box">6</span></li>
-                                <li><span class="arrow"></span><span class="walk"></span></li>
-                            </ul>
-                        </div>
-                    </div>
+                <div id="itineraries">
                 </div>
             </div>
         </div>

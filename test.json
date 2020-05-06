@@ -59,6 +59,7 @@
                             "headsign": "Kőbánya alsó vasútállomás",
                             "route": "9",
                             "routeColor": "#009FE3",
+                            "routeTextColor": "#FFFFFF",
                             "from": {
                                 "lat": 47.11,
                                 "lon": 19.11,
