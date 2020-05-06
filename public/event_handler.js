@@ -33,10 +33,9 @@ function addIntineraries(json) {
         document.getElementById("itineraries").innerHTML += itineraryHTML;
 
         //steps
-        document.getElementById(`itinerary${i}`).innerHTML = `<li id="${i}_0"><span class="route" style="background-image: url(img/walk.png);"></span></li>`;
-
+        document.getElementById(`itinerary${i}`).innerHTML = `<li id="${i}_0"><span class="route" style="background-image: url(img/a_icon.png);"></span></li>`;
         const steps = itinerary.steps;
-        for (let j = 1; j < steps.length; j++) {
+        for (let j = 0; j < steps.length; j++) {
             const step = steps[j];
             if (step.mode == "WALK") {
                 document.getElementById(`itinerary${i}`).innerHTML += `<li  id="${i}_${j}"><span class="arrow"></span><span class="route" style="background-image: url(img/walk.png);"></span></li>`;
@@ -48,6 +47,7 @@ function addIntineraries(json) {
                 document.getElementById(`itinerary${i}`).innerHTML += `<li  id="${i}_${j}"><span class="arrow"></span><span class="route" style="background-image: url(img/${step.mode.toLowerCase()}.png);"></span><span class="route-label-box" style="background-color: ${step.routeColor}; color: ${step.routeTextColor};">${step.route}</span></li>`;
             }
         }
+        document.getElementById(`itinerary${i}`).innerHTML += `<li id="${i}_${steps.length}"><span class="arrow"></span><span class="route" style="background-image: url(img/b_icon.png);"></span></li>`;
     }
 }
 
