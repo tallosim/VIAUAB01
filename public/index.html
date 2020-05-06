@@ -36,28 +36,38 @@
                     <table>
                         <tbody>
                             <tr>
-                                <td><img src="a.png" class="from-to-icon"></td>
+                                <td><img src="a_icon.png" class="from-to-icon"></td>
                                 <td><input placeholder="Honnan" id="planner-from" type="search" name="from"></td>
-                                <td rowspan="2"><button id="planner-reverse" onclick="reverse(); return false"><img
-                                            src="up-down.png" class="up-down-icon"></button></td>
+                                <td rowspan="2"><button id="planner-reverse" onclick="reverse(); return false"><img src="up_down_icon.png" class="up-down-icon"></button></td>
                             </tr>
                             <tr>
-                                <td><img src="b.png" class="from-to-icon"></td>
+                                <td><img src="b_icon.png" class="from-to-icon"></td>
                                 <td><input placeholder="Hova" id="planner-to" type="search" name="to"></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="time">
-                    <label for="start-time">Induládsi idő:</label><br>
+                    <label>Induládsi idő:</label><br>
                     <input type="date" id="planner-date" name="date"><input type="time" id="planner-time" name="time">
                     <script>var date = new Date(); document.getElementById("planner-date").valueAsDate = date; document.getElementById("planner-time").value = date.getHours() + ":" + date.getMinutes();</script>
                 </div>
                 <div class="start-planning">
                     <input type="button" value="Tervezés" id="start-planning" onclick="addRoute()">
-                    <input type="button" value="Törlés" onclick="removeRoute()">
                 </div>
             </form>
+        </div>
+        <div class="results">
+            <div class="results-context">
+                <label>Lehetséges útvonalak:</label><br>
+                <div class="itineraries">
+                    <div class="itinerary">
+                        <div class="span-itinerary">
+                            <p class="p-itinerary">17:55 ⇒ 18:42, 569 m séta <span class="right">47p</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div id="loading">

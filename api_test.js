@@ -16,7 +16,7 @@ module.exports = {
 
 function GetDataFromBKK(query, callback) {
     var jsonData;
-    request(`https://futar.bkk.hu/api/query/v1/ws/otp/api/where/plan-trip.json?key=apaiary-test&version=2&fromPlace=${query.fromPlace}&toPlace=${query.toPlace}&date=${query.date}&time=${query.time}`, { json: true }, function (error, response, body) {
+    request(`https://futar.bkk.hu/api/query/v1/ws/otp/api/where/plan-trip.json?key=talli&version=2&fromPlace=${query.fromPlace}&toPlace=${query.toPlace}&date=${query.date}&time=${query.time}`, { json: true }, function (error, response, body) {
         //console.log('Status:', response.statusCode);
         //console.log(response.headers);
         console.log(body);
@@ -29,10 +29,6 @@ function MakeJSON(query, callback) {
         //const travel_num = FindFastesPlan(bkk_response);
         var plan = bkk_response.data.entry.plan;
         //var references = bkk_response.data.references;
-
-        MySQLSelectStops("C13630315", 20, 29, function (results) {
-            console.log(results);
-        });
 
 
         var json = {
@@ -113,7 +109,9 @@ function MakeJSON(query, callback) {
                     route.from = leg.from;
                     route.to = leg.to;
 
-                    //stops!!!!! MySQL query
+                    // MySQLSelectStops(leg.tripId.substr(4), leg.from.stopIndex, leg.to.stopIndex, function (results) {
+                    //     console.log(results);
+                    // });
 
                     var coordinates = polyline.decode(leg.legGeometry.points);
                     coordinates.forEach(coordinate => {

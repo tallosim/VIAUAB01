@@ -4,8 +4,8 @@ var layerGroup = L.layerGroup().addTo(map);
 
 var layerIDs = [];
 
-const a_icon = L.icon({ iconUrl: "a.png", iconSize: [30, 30], iconAnchor: [15, 30] });
-const b_icon = L.icon({ iconUrl: "b.png", iconSize: [30, 30], iconAnchor: [15, 30] });
+const a_icon = L.icon({ iconUrl: "a_point.png", iconSize: [30, 42], iconAnchor: [15, 42] });
+const b_icon = L.icon({ iconUrl: "b_point.png", iconSize: [30, 42], iconAnchor: [15, 42] });
 
 var from_marker = new L.Marker(L.latLng(90, 0), { icon: a_icon });
 map.addLayer(from_marker);
