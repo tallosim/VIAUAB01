@@ -1,5 +1,14 @@
 var request = require('request');
 var polyline = require('google-polyline');
+var mysql = require('mysql');
+
+var SQLconnection = mysql.createConnection({
+    user: 'root',
+    server: 'localhost',
+    database: 'gtfs'
+});
+
+SQLconnection.connect();
 
 module.exports = {
     MakeJSON: MakeJSON
@@ -20,6 +29,11 @@ function MakeJSON(query, callback) {
         //const travel_num = FindFastesPlan(bkk_response);
         var plan = bkk_response.data.entry.plan;
         //var references = bkk_response.data.references;
+
+        MySQLSelectStops("C13630315", 20, 29, function (results) {
+            console.log(results);
+        });
+
 
         var json = {
             "data": {
@@ -113,6 +127,22 @@ function MakeJSON(query, callback) {
 
         callback(json);
     });
+}
+
+function MySQLSelectStops(routeId, fromStopIndex, toStopIndex, callback) {
+    var query = 'SELECT s.stop_lat AS "lat", s.stop_lon AS "lon" ' +
+        'FROM stops s ' +
+        'INNER JOIN stop_times st ON st.stop_id = s.stop_id ' +
+        `WHERE st.trip_id = "${routeId}" AND st.stop_sequence BETWEEN ${fromStopIndex} AND ${toStopIndex} ` +
+        'ORDER BY st.stop_sequence;';
+
+
+    SQLconnection.query(query, function (error, results, fields) {
+        if (error) throw error;
+        //console.log(results);
+        callback(results);
+    });
+    //SQLconnection.destroy();
 }
 
 function FindFastesPlan(bkk_response) {

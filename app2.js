@@ -23,7 +23,9 @@ app.get('/', function(req, res) {
 app.get('/response.json', function(req, res) {
     //console.log(req.url);
     //console.log(req.query);
-    api_test.MakeJSON(req.query, function(JSON) { res.send(JSON); });
+    api_test.MakeJSON(req.query, function(JSON) {
+        res.send(JSON);
+    });
     //res.sendFile(path.join(__dirname + '/test.json'));
 });
 

@@ -39,12 +39,12 @@ function addRoute() {
     var bounds = L.latLngBounds();
 
     var itinerary = json.data.plan.itineraries[0];
-    
+
     itinerary.steps.forEach(element => {
       if (element.mode == "WALK") {
-        var walk = {"type": "LineString", "coordinates": []};
+        var walk = { "type": "LineString", "coordinates": [] };
         walk.coordinates = element.geometry;
-        var style = {"color": "#888888", "weight": 6, "dashArray": "5, 10"};
+        var style = { "color": "#888888", "weight": 6, "dashArray": "5, 10" };
         var geoJSON = L.geoJSON(walk, { style: style }).addTo(layerGroup);
         layerIDs.push(L.stamp(geoJSON));
         bounds.extend(geoJSON.getBounds());
@@ -53,26 +53,26 @@ function addRoute() {
 
     itinerary.steps.forEach(element => {
       if (element.mode == "RAIL" || element.mode == "BUS" || element.mode == "TRAM" || element.mode == "TROLLEYBUS" || element.mode == "SUBWAY") {
-        var route = {"type": "LineString", "coordinates": []};
+        var route = { "type": "LineString", "coordinates": [] };
         route.coordinates = element.geometry;
-        var routeStyle = {"color": "", "weight": 6};
+        var routeStyle = { "color": "", "weight": 6 };
         routeStyle.color = element.routeColor;
         var geoJSON = L.geoJSON(route, { style: routeStyle }).addTo(layerGroup);
         layerIDs.push(L.stamp(geoJSON));
         bounds.extend(geoJSON.getBounds());
 
-        var endStops = {"type": "MultiPoint", "coordinates": []};
+        var endStops = { "type": "MultiPoint", "coordinates": [] };
         endStops.coordinates.push([element.from.lon, element.from.lat]);
         endStops.coordinates.push([element.to.lon, element.to.lat]);
-        var endStopsStyle = {"color": "", "radius": 7, "weight": 3, "fillColor": "#FFFFFF", "fillOpacity": 1};
+        var endStopsStyle = { "color": "", "radius": 7, "weight": 3, "fillColor": "#FFFFFF", "fillOpacity": 1 };
         endStopsStyle.color = element.routeColor;
         var geoJSON = L.geoJSON(endStops, { pointToLayer: function (feature, latlng) { return L.circleMarker(latlng, endStopsStyle); } }).addTo(layerGroup);
         layerIDs.push(L.stamp(geoJSON));
         bounds.extend(geoJSON.getBounds());
 
-        var stops = {"type": "MultiPoint", "coordinates": []};
+        var stops = { "type": "MultiPoint", "coordinates": [] };
         stops.coordinates = element.stops;
-        var stopsStyle = {"color": "", "radius": 4, "weight": 2, "fillColor": "#FFFFFF", "fillOpacity": 1};
+        var stopsStyle = { "color": "", "radius": 4, "weight": 2, "fillColor": "#FFFFFF", "fillOpacity": 1 };
         stopsStyle.color = element.routeColor;
         var geoJSON = L.geoJSON(stops, { pointToLayer: function (feature, latlng) { return L.circleMarker(latlng, stopsStyle); } }).addTo(layerGroup);
         layerIDs.push(L.stamp(geoJSON));
@@ -82,7 +82,7 @@ function addRoute() {
     setAIcon(L.latLng(json.data.plan.from.lat, json.data.plan.from.lon));
     setBIcon(L.latLng(json.data.plan.to.lat, json.data.plan.to.lon));
     loadingHide();
-    map.flyToBounds(bounds, { paddingTopLeft: L.point(350, 0), duration: 0.5 });
+    map.flyToBounds(bounds, { paddingTopLeft: L.point(380, 10), paddingBottomRight: L.point(10, 10), duration: 0.5 });
   });
 }
 
@@ -111,14 +111,14 @@ function reverse() {
   //removeRoute();
 }
 
-function setAIcon(latlng){
+function setAIcon(latlng) {
   map.removeLayer(from_marker);
   from_marker = new L.Marker(latlng, { icon: a_icon });
   map.addLayer(from_marker);
   document.getElementById("planner-from").value = ((Math.round(latlng.lat + "e+6") / 1000000) + "," + (Math.round(latlng.lng + "e+6") / 1000000));
 }
 
-function setBIcon(latlng){
+function setBIcon(latlng) {
   map.removeLayer(to_marker);
   to_marker = new L.Marker(latlng, { icon: b_icon });
   map.addLayer(to_marker);
