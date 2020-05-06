@@ -16,7 +16,7 @@ module.exports = {
 
 function GetDataFromBKK(query, callback) {
     var jsonData;
-    request(`https://futar.bkk.hu/api/query/v1/ws/otp/api/where/plan-trip.json?key=talli&version=2&fromPlace=${query.fromPlace}&toPlace=${query.toPlace}&date=${query.date}&time=${query.time}`, { json: true }, function (error, response, body) {
+    request(`https://futar.bkk.hu/api/query/v1/ws/otp/api/where/plan-trip.json?key=bkk-web&version=2&fromPlace=${query.fromPlace}&toPlace=${query.toPlace}&date=${query.date}&time=${query.time}`, { json: true }, function (error, response, body) {
         //console.log('Status:', response.statusCode);
         //console.log(response.headers);
         console.log(body);
