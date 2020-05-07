@@ -34,11 +34,11 @@ function addIntineraries(json) {
 
         //steps
         document.getElementById(`itinerary${i}`).innerHTML = `<li id="${i}_0"><span class="route" style="background-image: url(img/walk.png);"></span></li>`;
-
+        var preStep = "WALK";
         const steps = itinerary.steps;
         for (let j = 1; j < steps.length; j++) {
             const step = steps[j];
-            if (step.mode == "WALK") {
+            if (step.mode == "WALK" && preStep != "WALK") {
                 document.getElementById(`itinerary${i}`).innerHTML += `<li  id="${i}_${j}"><span class="arrow"></span><span class="route" style="background-image: url(img/walk.png);"></span></li>`;
             }
             if (step.mode == "RAIL" || step.mode == "SUBWAY") {
@@ -47,6 +47,7 @@ function addIntineraries(json) {
             if (step.mode == "BUS" || step.mode == "TRAM" || step.mode == "TROLLEYBUS" || step.mode == "NIGHTBUS") {
                 document.getElementById(`itinerary${i}`).innerHTML += `<li  id="${i}_${j}"><span class="arrow"></span><span class="route" style="background-image: url(img/${step.mode.toLowerCase()}.png);"></span><span class="route-label-box" style="background-color: ${step.routeColor}; color: ${step.routeTextColor};">${step.route}</span></li>`;
             }
+            preStep = step.mode;
         }
     }
 }

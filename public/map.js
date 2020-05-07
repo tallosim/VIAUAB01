@@ -38,10 +38,18 @@ function makeRequest() {
   clearIntineraries();
   loadJSON(function (response) {
     json = JSON.parse(response);
-    addRoute(json);
-    setAIcon(L.latLng(json.data.plan.from.lat, json.data.plan.from.lon));
-    setBIcon(L.latLng(json.data.plan.to.lat, json.data.plan.to.lon));
-    addIntineraries(json);
+    if (json.code == 200) {
+      addRoute(json);
+      setAIcon(L.latLng(json.data.plan.from.lat, json.data.plan.from.lon));
+      setBIcon(L.latLng(json.data.plan.to.lat, json.data.plan.to.lon));
+      addIntineraries(json);
+    }
+    if (json.code == 500) {
+      document.getElementById("planner-from").value = "";
+      document.getElementById("planner-to").value = "";
+      loadingHide();
+      alert("Az utazás nem lehetséges. Probálja meg az útvonaltervezést más paraméterekkel.");
+    }
   });
 }
 
@@ -90,7 +98,7 @@ function addRoute(json, num = 0) {
     }
   });
   loadingHide();
-  map.flyToBounds(bounds, { paddingTopLeft: L.point(390, 30), paddingBottomRight: L.point(30, 30), duration: 0.5, easeLinearity: 0.8 });
+  map.flyToBounds(bounds, { paddingTopLeft: L.point(390, 30), paddingBottomRight: L.point(30, 30), duration: 0.5, easeLinearity: 0.95 });
 }
 
 
@@ -115,7 +123,8 @@ function reverse() {
   map.addLayer(from_marker);
   map.addLayer(to_marker);
 
-  //removeRoute();
+  clearIntineraries();
+  removeRoute();
 }
 
 function setAIcon(latlng) {
