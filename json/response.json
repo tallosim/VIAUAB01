@@ -1,0 +1,11 @@
+{
+    "data": {
+        "plan": {
+            "from": {},
+            "to": {},
+            "itineraries": []
+        }
+    },
+    "status": "OK",
+    "code": 200
+}
