@@ -8,6 +8,7 @@
     "route": "",
     "routeColor": "",
     "routeTextColor": "",
+    "tripId": "",
     "from": {},
     "to": {},
     "stops": [],

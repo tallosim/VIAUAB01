@@ -1,4 +1,6 @@
 <?php
+require_once "config.php";
+
 if (isset($_GET["fromPlace"]) && !empty($_GET["fromPlace"]) && isset($_GET["toPlace"]) && !empty($_GET["toPlace"]) && isset($_GET["date"]) && !empty($_GET["date"]) && isset($_GET["time"])) {
     $url_query = array("fromPlace" => "", "toPlace" => "", "date" => "", "time" => "");
 
@@ -9,8 +11,9 @@ if (isset($_GET["fromPlace"]) && !empty($_GET["fromPlace"]) && isset($_GET["toPl
     if (!empty($_GET["time"])) {
         $url_query["time"] = trim($_GET["time"]);
     }
-
-    MakeResponse($url_query);
+    $link = opendb();
+    MakeResponse($url_query, $link);
+    mysqli_close($link);
     //echo json_encode(json_decode(file_get_contents("response.json"))->data->plan->from);
 }
 
@@ -60,9 +63,10 @@ function GooglePolylineDecode($string)
     return $points;
 }
 
-function MakeResponse($url_query)
+function MakeResponse($url_query, $link)
 {
     $bkk_response = json_decode(GetBKKApi($url_query));
+
     if ($bkk_response->code == 200) {
         $plan = $bkk_response->data->entry->plan;
 
@@ -110,16 +114,23 @@ function MakeResponse($url_query)
                     $route->to = $leg->to;
                     $route->headsign = $leg->headsign;
                     $route->route = $leg->route;
+                    $route->tripId = substr($leg->tripId, 4);
                     $route->routeColor = "#" . $leg->routeColor;
                     $route->routeTextColor = "#" . $leg->routeTextColor;
+
+                    if ($route->routeColor == "#1E1E1E") {
+                        $route->mode = "NIGHTBUS";
+                    }
 
                     $coordinates = GooglePolylineDecode($leg->legGeometry->points);
                     for ($i=0; $i < $leg->legGeometry->length; $i++) { 
                         array_push($route->geometry, [$coordinates[2 * $i + 1], $coordinates[2 * $i]]);
                     }
 
-                    //$route->stops!!!
-
+                    $coordinates = GetStopsMySQL(substr($leg->tripId, 4), $leg->from->stopIndex, $leg->to->stopIndex, $link);
+                    while ($coordinate =  mysqli_fetch_array($coordinates)) {
+                        array_push($route->stops, [$coordinate["lon"], $coordinate["lat"]]);
+                    }
                     array_push($itinerary->steps, $route);
                 }
             }
@@ -129,5 +140,23 @@ function MakeResponse($url_query)
 
         echo json_encode($response);
     }
+    if ($bkk_response->code == 500) {
+        //valami nem jó itt
+        
+        $response = array("code" => 500, "status" => $bkk_response->status, "text" => $bkk_response->text);
+        echo "ERROR";
+    }
+}
+
+function GetStopsMySQL($routeId, $fromStopIndex, $toStopIndex, $link)
+{
+    $SQL_query = sprintf('SELECT s.stop_lat AS "lat", s.stop_lon AS "lon"
+    FROM stops s 
+    INNER JOIN stop_times st ON st.stop_id = s.stop_id 
+    WHERE st.trip_id = "%s" AND st.stop_sequence BETWEEN %s AND %s 
+    ORDER BY st.stop_sequence;', mysqli_real_escape_string($link, $routeId), mysqli_real_escape_string($link, $fromStopIndex + 1), mysqli_real_escape_string($link, $toStopIndex - 1));
+
+    $result = mysqli_query($link, $SQL_query);
+    return $result;
 }
 ?>
