@@ -130,3 +130,4 @@ function MakeResponse($url_query)
         echo json_encode($response);
     }
 }
+?>
