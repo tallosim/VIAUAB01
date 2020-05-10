@@ -15,8 +15,8 @@ map.addLayer(to_marker);
 
 var json;
 
-function loadJSON(callback) {
-  var params = read_data();
+function loadJSON(params, type, callback) {
+  params["type"] = type;
   var queryString = Object.keys(params).map((key) => {
     return encodeURIComponent(key) + '=' + encodeURIComponent(params[key])
   }).join('&');
@@ -32,17 +32,17 @@ function loadJSON(callback) {
   xobj.send(null);
 }
 
-function makeRequest() {
+function makeRequest(params = read_data(), type = "plan-trip") {
   loadingShow();
   removeRoute();
   clearIntineraries();
-  loadJSON(function (response) {
+  loadJSON(params, type, function (response) {
     json = JSON.parse(response);
     if (json.code == 200) {
       addRoute(json);
       setAIcon(L.latLng(json.data.plan.from.lat, json.data.plan.from.lon));
       setBIcon(L.latLng(json.data.plan.to.lat, json.data.plan.to.lon));
-      addIntineraries(json);
+      type == "plan-trip" ? addIntineraries(json) : 0;
     }
     if (json.code == 500) {
       document.getElementById("planner-from").value = "";
@@ -79,20 +79,20 @@ function addRoute(json, num = 0) {
       layerIDs.push(L.stamp(geoJSON));
       bounds.extend(geoJSON.getBounds());
 
+      var stops = { "type": "MultiPoint", "coordinates": [] };
+      stops.coordinates = element.stops;
+      var stopsStyle = { "color": "", "radius": 3, "weight": 1, "fillColor": "#FFFFFF", "fillOpacity": 1 };
+      stopsStyle.color = element.routeColor;
+      var geoJSON = L.geoJSON(stops, { pointToLayer: function (feature, latlng) { return L.circleMarker(latlng, stopsStyle); } }).addTo(layerGroup);
+      layerIDs.push(L.stamp(geoJSON));
+      bounds.extend(geoJSON.getBounds());
+
       var endStops = { "type": "MultiPoint", "coordinates": [] };
       endStops.coordinates.push([element.from.lon, element.from.lat]);
       endStops.coordinates.push([element.to.lon, element.to.lat]);
       var endStopsStyle = { "color": "", "radius": 7, "weight": 3, "fillColor": "#FFFFFF", "fillOpacity": 1 };
       endStopsStyle.color = element.routeColor;
       var geoJSON = L.geoJSON(endStops, { pointToLayer: function (feature, latlng) { return L.circleMarker(latlng, endStopsStyle); } }).addTo(layerGroup);
-      layerIDs.push(L.stamp(geoJSON));
-      bounds.extend(geoJSON.getBounds());
-
-      var stops = { "type": "MultiPoint", "coordinates": [] };
-      stops.coordinates = element.stops;
-      var stopsStyle = { "color": "", "radius": 3, "weight": 1, "fillColor": "#FFFFFF", "fillOpacity": 1 };
-      stopsStyle.color = element.routeColor;
-      var geoJSON = L.geoJSON(stops, { pointToLayer: function (feature, latlng) { return L.circleMarker(latlng, stopsStyle); } }).addTo(layerGroup);
       layerIDs.push(L.stamp(geoJSON));
       bounds.extend(geoJSON.getBounds());
     }
