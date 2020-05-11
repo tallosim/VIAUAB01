@@ -65,7 +65,7 @@ function addItineraryContent(json, num = 0) {
     `<div class="place" id="place_${num}_0">
         <span class="time-date">${FormatTime(itinerary.startTime)}<br><span class="date">${FormatDate(itinerary.startTime)}</span></span>
         <span class="stop-container"><span class="line-walk-place"></span><span class="line-stop-end" style="background-image: url(img/a_icon.png);"></span></span>
-        <div class="label-content"><span class="name">${json.data.plan.from.name}</span><p class="subtext"></p></div>
+        <div class="label-content"><span class="name">${GetAddress(json.data.plan.from.address)}</span><p class="subtext">${GetSubAddress(json.data.plan.from.address)}</p></div>
     </div>`;
 
     document.getElementById(`itinerary-content_${num}`).innerHTML += start;
@@ -165,7 +165,7 @@ function addItineraryContent(json, num = 0) {
     `<div class="place" id="place_${num}_0">
         <span class="time-date">${FormatTime(itinerary.endTime)}<br><span class="date">${FormatDate(itinerary.endTime)}</span></span>
         <span class="stop-container"><span class="line-stop-end" style="background-image: url(img/b_icon.png);"></span></span>
-        <div class="label-content"><span class="name">${json.data.plan.to.name}</span><p class="subtext"></p></div>
+        <div class="label-content"><span class="name">${GetAddress(json.data.plan.to.address)}</span><p class="subtext">${GetSubAddress(json.data.plan.to.address)}</p></div>
     </div>`;
     document.getElementById(`itinerary-content_${num}`).innerHTML += end;
 }
@@ -191,6 +191,26 @@ function FormatDuration(duration, format = 0) {
 function FormatDate(date) {
     const months = ["jan", "febr", "márc", "ápr", "máj", "jún", "júl", "aug", "szept", "okt", "nov", "dec"];
     return months[(new Date(date).getMonth())] + " " + (new Date(date).getDate()) + ".";
+}
+
+function GetAddress(address) {
+    if (address.road && address.house_number) {
+        return address.road + " " + address.house_number;
+    }
+    else if (address.road) {
+        return address.road;
+    }
+    else if (address.name) {
+        return address.name;
+    }
+}
+function GetSubAddress(address) {
+    if (address.postcode && address.city) {
+        return address.postcode + " " + address.city;
+    }
+    else {
+        return "";
+    }
 }
 
 function clearIntineraries() {

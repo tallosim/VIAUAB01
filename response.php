@@ -21,10 +21,6 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
         $url_query["tripId"] = trim($_GET["tripId"]);
         $url_query["fromStopIndex"] = trim($_GET["fromStopIndex"]);
         $url_query["toStopIndex"] = trim($_GET["toStopIndex"]);
-
-        $link = opendb();
-        MakeTripResponse($url_query, $link);
-        mysqli_close($link);
     } else {
         echo "ERROR";
     }
@@ -33,6 +29,21 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
 function GetBKKApi($url_query)
 {
     $api_query = sprintf("https://futar.bkk.hu/api/query/v1/ws/otp/api/where/plan-trip.json?key=bkk-web&version=3&fromPlace=%s&toPlace=%s&date=%s&time=%s", $url_query["fromPlace"], $url_query["toPlace"], $url_query["date"], $url_query["time"]);
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $api_query);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_HEADER, FALSE);
+
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    //echo $response;
+    return $response;
+}
+
+function GetLocationIQApi($lat, $lon)
+{
+    $api_query = sprintf("https://eu1.locationiq.com/v1/reverse.php?key=2a4d7ec5256685&lat=%s&lon=%s&format=json", $lat, $lon);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $api_query);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -76,39 +87,6 @@ function GooglePolylineDecode($string)
     return $points;
 }
 
-function MakeTripResponse($url_query, $link)
-{
-    $response = json_decode(file_get_contents("json/response.json"));
-
-    $response->data->plan->from = ["lat" => 0, "lon" => 90];
-    $response->data->plan->to = ["lat" => 0, "lon" => 90];
-
-    $itinerary = json_decode(file_get_contents("json/itinerary.json"));
-
-    $route = json_decode(file_get_contents("json/route.json"));
-
-    $route->routeColor = "#000000";
-    $route->mode = "BUS";
-
-    $coordinates = GetStopsMySQL($link, $url_query["tripId"], $url_query["fromStopIndex"], $url_query["toStopIndex"], 0);
-    while ($coordinate =  mysqli_fetch_array($coordinates)) {
-        array_push($route->stops, [$coordinate["lon"], $coordinate["lat"]]);
-    }
-
-    $route->from = ["lat" => $route->stops[0][1], "lon" => $route->stops[0][0]];
-    $length = count($route->stops) - 1;
-    $route->to = ["lat" => $route->stops[$length][1], "lon" => $route->stops[$length][0]];
-
-    $coordinates = GetTripShapeMySQL($link, $route->tripId, $route->from->stopCode, $route->to->stopCode);
-    while ($coordinate =  mysqli_fetch_array($coordinates)) {
-        array_push($route->geometry, [$coordinate["lon"], $coordinate["lat"]]);
-    }
-
-    array_push($itinerary->steps, $route);
-    array_push($response->data->plan->itineraries, $itinerary);
-    echo json_encode($response);
-}
-
 function MakeResponse($url_query, $link)
 {
     $bkk_response = json_decode(GetBKKApi($url_query));
@@ -120,6 +98,13 @@ function MakeResponse($url_query, $link)
 
         $response->data->plan->from = $plan->from;
         $response->data->plan->to = $plan->to;
+
+        $fromAddress = json_decode(GetLocationIQApi($response->data->plan->from->lat, $response->data->plan->from->lon));
+        $toAddress = json_decode(GetLocationIQApi($response->data->plan->to->lat, $response->data->plan->to->lon));
+
+        $response->data->plan->from->{"address"} = $fromAddress->address;
+        $response->data->plan->to->{"address"} = $toAddress->address;
+
 
         foreach ($plan->itineraries as $element) {
             $itinerary = json_decode(file_get_contents("json/itinerary.json"));
@@ -192,11 +177,17 @@ function MakeResponse($url_query, $link)
 
         echo json_encode($response);
     }
+    if ($bkk_response->code == 400) {
+        //valami nem jó itt
+
+        $response = array("code" => 400, "status" => $bkk_response->status, "text" => $bkk_response->text);
+        echo json_encode($response);
+    }
     if ($bkk_response->code == 500) {
         //valami nem jó itt
 
         $response = array("code" => 500, "status" => $bkk_response->status, "text" => $bkk_response->text);
-        echo "ERROR";
+        echo json_encode($response);
     }
 }
 

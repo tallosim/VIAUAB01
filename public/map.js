@@ -44,7 +44,7 @@ function makeRequest(params = read_data(), type = "plan-trip") {
       setBIcon(L.latLng(json.data.plan.to.lat, json.data.plan.to.lon));
       type == "plan-trip" ? addIntineraries(json) : 0;
     }
-    if (json.code == 500) {
+    if (json.code == 400 || json.code == 500) {
       document.getElementById("planner-from").value = "";
       document.getElementById("planner-to").value = "";
       loadingHide();
