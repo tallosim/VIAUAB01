@@ -240,21 +240,31 @@ function GetTripShapeMySQL($link, $tripId, $fromStopCode, $toStopCode, $mode)
 function GetTripShapeSeqMySQL($link, $tripId, $stopCode, $mode)
 {
     $stopCode = mysqli_real_escape_string($link, $stopCode);
-    $SQL_query = sprintf(
-        'SELECT s.shape_pt_sequence AS "seq"
-        FROM shapes s 
-        INNER JOIN trips t on t.shape_id = s.shape_id 
-        WHERE t.trip_id = "%s" AND s.shape_pt_lat = (SELECT s.stop_lat FROM stops s WHERE s.stop_id = "%s") AND s.shape_pt_lon = (SELECT s.stop_lon FROM stops s WHERE s.stop_id = "%s")
-        ORDER BY s.shape_dist_traveled;',
-        $tripId, $stopCode, $stopCode
-    );
+    // $SQL_query = sprintf(
+    //     'SELECT s.shape_pt_sequence AS "seq"
+    //     FROM shapes s 
+    //     INNER JOIN trips t on t.shape_id = s.shape_id 
+    //     WHERE t.trip_id = "%s" AND s.shape_pt_lat = (SELECT s.stop_lat FROM stops s WHERE s.stop_id = "%s") AND s.shape_pt_lon = (SELECT s.stop_lon FROM stops s WHERE s.stop_id = "%s")
+    //     ORDER BY s.shape_dist_traveled;',
+    //     $tripId, $stopCode, $stopCode
+    // );
 
-    if ($mode == "RAIL") {
+    if ($mode == "SUBWAY") {
         $SQL_query = sprintf(
             'SELECT s.shape_pt_sequence AS "seq"
             FROM shapes s 
             INNER JOIN trips t on t.shape_id = s.shape_id 
-            WHERE t.trip_id = "%s" AND ABS(s.shape_pt_lat - (SELECT s.stop_lat FROM stops s WHERE s.stop_id = "%s")) < 0.0001 AND ABS(s.shape_pt_lon - (SELECT s.stop_lon FROM stops s WHERE s.stop_id = "%s")) < 0.0001
+            WHERE t.trip_id = "%s" AND ABS(s.shape_pt_lat - (SELECT s.stop_lat FROM stops s WHERE s.stop_id = "%s")) < 0.0004 AND ABS(s.shape_pt_lon - (SELECT s.stop_lon FROM stops s WHERE s.stop_id = "%s")) < 0.0004
+            ORDER BY s.shape_dist_traveled;',
+            $tripId, $stopCode, $stopCode
+        );
+    }
+    else {
+        $SQL_query = sprintf(
+            'SELECT s.shape_pt_sequence AS "seq"
+            FROM shapes s 
+            INNER JOIN trips t on t.shape_id = s.shape_id 
+            WHERE t.trip_id = "%s" AND ABS(s.shape_pt_lat - (SELECT s.stop_lat FROM stops s WHERE s.stop_id = "%s")) < 0.00015 AND ABS(s.shape_pt_lon - (SELECT s.stop_lon FROM stops s WHERE s.stop_id = "%s")) < 0.00015
             ORDER BY s.shape_dist_traveled;',
             $tripId, $stopCode, $stopCode
         );

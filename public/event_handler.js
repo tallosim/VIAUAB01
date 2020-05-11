@@ -24,9 +24,9 @@ function addIntineraries(json) {
     for (let i = 0; i < itineraries.length; i++) {
         const itinerary = itineraries[i];
 
-        const startTime = pad((new Date(itinerary.startTime)).getHours()) + ":" + pad((new Date(itinerary.startTime)).getMinutes());
-        const endTime = pad((new Date(itinerary.endTime)).getHours()) + ":" + pad((new Date(itinerary.endTime)).getMinutes());
-        const duration = (((new Date(itinerary.duration)).getUTCHours() > 0) ? (new Date(itinerary.duration)).getUTCHours() + "ó " : "") + (new Date(itinerary.duration)).getMinutes() + "p";
+        const startTime = FormatTime(itinerary.startTime);
+        const endTime = FormatTime(itinerary.endTime);
+        const duration = FormatDuration(itinerary.duration);
         const distance = Math.floor(itinerary.walkDistance);
 
         var itineraryHTML = `<div class="itinerary" onclick="addRoute(json, ${i});"><div class="span-itinerary"><p class="p-itinerary">${startTime} ⇒ ${endTime}, ${distance} m séta <span class="right">${duration}</span></p><ul class="route-list" id="itinerary${i}"></ul></div></div>`;
@@ -50,6 +50,18 @@ function addIntineraries(json) {
             preStep = step.mode;
         }
     }
+}
+
+function addItineraryContent(json, num = 0) {
+    
+}
+
+function FormatTime(time) {
+    return pad((new Date(time)).getHours()) + ":" + pad((new Date(time)).getMinutes());
+}
+
+function FormatDuration(duration, format = 0) {
+    return (((new Date(duration)).getUTCHours() > 0) ? (new Date(duration)).getUTCHours() + (format == 0 ? "ó " : "óra ") : "") + (new Date(duration)).getMinutes() + (format == 0 ? "p" : "perc");
 }
 
 function clearIntineraries() {

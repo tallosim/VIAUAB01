@@ -105,7 +105,7 @@ td {
 
 }
 
-.time {
+.start-time {
     margin-top: 20px;
 }
 
@@ -163,11 +163,12 @@ label {
     padding-left: 15px;
 }
 
-.results-context {
+.results-content {
     padding-right: 15px;
     overflow-x: hidden;
-    overflow-y: auto;
+    overflow-y: scroll;
     position: relative;
+    height: 565px;
 }
 
 .itinerary {
@@ -256,4 +257,203 @@ label {
 
 li {
     display: inline-block;
+}
+
+.itinerary-content {
+    margin-top: 20px;
+    padding: 9px;
+    width: 100%;
+    box-sizing: border-box;
+    height: 100px;
+    background-color: #fff;
+    border: 1px solid #555555;
+    border-radius: 4px;
+    display: table;
+}
+
+.place {
+    display: table-row;
+    position: relative;
+    color: #333333;
+    height: 29px;
+}
+
+.time-date {
+    display: table-cell;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 11px;
+    padding-right: 2px;
+    padding-top: 4px;
+    text-align: right;
+    vertical-align: top;
+    width: 3.5em;
+}
+
+.date {
+    font-size: 8px;
+    font-weight: 700;
+    line-height: 11px;
+    right: -2px;
+    position: relative;
+    text-align: right;
+}
+
+.stop-container {
+    display: table-cell;
+    vertical-align: middle;
+    position: relative;
+}
+
+.line-walk-place {
+    background-color: #4c0e5f;
+    position: absolute;
+    -webkit-mask-image: url(img/walk_line.png);
+    -webkit-mask-size: 24px;
+    margin-top: 20px;
+    width: 24px;
+    top: 0;
+    height: 9px;
+}
+
+.line-stop-end {
+    background-size: 20px;
+    height: 20px;
+    width: 20px;
+    position: absolute;
+    margin-left: 2px;
+    margin-right: 2px;
+    top: 0;
+}
+
+.label-content {
+    padding-left: 2px;
+    padding-right: 2px;
+    vertical-align: top;
+    display: table-cell;
+    position: relative;
+    color: #1E1E1E;
+}
+
+.name {
+    font-size: 15px;
+    font-weight: 700;
+    display: block;
+    line-height: 18px;
+}
+
+.mode-walk {
+    display: table-row;
+    height: 55px;
+}
+
+.line-walk {
+    background-color: #4c0e5f;
+    -webkit-mask-image: url(img/walk_line.png);
+    -webkit-mask-size: 24px;
+    margin-top: 20px;
+    width: 24px;
+    vertical-align: middle;
+    display: table-cell;
+    text-align: center;
+}
+
+.content {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 4.5px 2px 13.5px 2px;
+
+}
+
+.desc {
+    display: table-row;
+}
+
+.walk-icon {
+    display: table-cell;
+}
+
+.route-icon {
+    display: table-cell;
+    min-width: 80px;
+}
+
+.route-desc {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 14px;
+    vertical-align: middle;
+    padding-left: 5px;
+    max-width: 100px;
+    display: table-cell;
+}
+
+.walk-desc {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 14px;
+    vertical-align: middle;
+    padding-left: 5px;
+    display: table-cell;
+}
+
+.time {
+    display: table-cell;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 18px;
+    padding-right: 2px;
+    text-align: right;
+    vertical-align: top;
+    width: 59px;
+}
+
+.line-stop-route {
+    background-size: 20px;
+    background-image: url(img/small_circle.png);
+    height: 20px;
+    width: 20px;
+    position: absolute;
+    margin-left: 2px;
+    margin-right: 2px;
+    top: 0;
+    -webkit-mask-image: url(img/big_circle.png);
+    -webkit-mask-size: 20px;
+}
+
+.mode-route {
+    display: table-row;
+    height: 55px;
+}
+
+.line-route {
+    -webkit-mask-image: url(img/route_line.png);
+    -webkit-mask-size: 24px;
+    margin-top: 20px;
+    width: 24px;
+    vertical-align: middle;
+    display: table-cell;
+    text-align: center;
+}
+
+.line-route-place {
+    position: absolute;
+    -webkit-mask-image: url(img/route_line.png);
+    -webkit-mask-size: 24px;
+    margin-top: 20px;
+    width: 24px;
+    top: -2px;
+    height: 11px;
+}
+
+.subtext {
+    margin: 0;
+    padding: 0;
+    font-size: 9px;
+    font-weight: 400;
+    line-height: 9px;
+}
+
+.stops {
+    color: #4c0e5f;
 }
