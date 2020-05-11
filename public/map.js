@@ -34,12 +34,12 @@ function loadJSON(params, type, callback) {
 
 function makeRequest(params = read_data(), type = "plan-trip") {
   loadingShow();
-  removeRoute();
   clearIntineraries();
   loadJSON(params, type, function (response) {
     json = JSON.parse(response);
     if (json.code == 200) {
-      addRoute(json);
+      ShowRoute();
+      ShowItineraryContent();
       setAIcon(L.latLng(json.data.plan.from.lat, json.data.plan.from.lon));
       setBIcon(L.latLng(json.data.plan.to.lat, json.data.plan.to.lon));
       type == "plan-trip" ? addIntineraries(json) : 0;
@@ -54,7 +54,6 @@ function makeRequest(params = read_data(), type = "plan-trip") {
 }
 
 function addRoute(json, num = 0) {
-  removeRoute();
   var bounds = L.latLngBounds();
   var itinerary = json.data.plan.itineraries[num];
 
@@ -124,6 +123,7 @@ function reverse() {
   map.addLayer(to_marker);
 
   clearIntineraries();
+  clearItineraryContent();
   removeRoute();
 }
 
@@ -145,10 +145,12 @@ map.on('click', function (e) {
   setAIcon(e.latlng);
   removeRoute();
   clearIntineraries();
+  clearItineraryContent();
 });
 
 map.on('contextmenu', function (e) {
   setBIcon(e.latlng);
   removeRoute();
   clearIntineraries();
+  clearItineraryContent();
 });

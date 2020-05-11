@@ -26,10 +26,10 @@ function addIntineraries(json) {
 
         const startTime = FormatTime(itinerary.startTime);
         const endTime = FormatTime(itinerary.endTime);
-        const duration = FormatDuration(itinerary.duration);
+        const duration = FormatDuration(itinerary.duration + 60000);
         const distance = Math.floor(itinerary.walkDistance);
 
-        var itineraryHTML = `<div class="itinerary" onclick="addRoute(json, ${i});"><div class="span-itinerary"><p class="p-itinerary">${startTime} ⇒ ${endTime}, ${distance} m séta <span class="right">${duration}</span></p><ul class="route-list" id="itinerary${i}"></ul></div></div>`;
+        var itineraryHTML = `<div class="itinerary" onclick="ShowRoute(${i}); ShowItineraryContent(${i});"><div class="span-itinerary"><p class="p-itinerary">${startTime} ⇒ ${endTime}, ${distance} m séta <span class="right">${duration}</span></p><ul class="route-list" id="itinerary${i}"></ul></div></div>`;
         document.getElementById("itineraries").innerHTML += itineraryHTML;
 
         //steps
@@ -52,8 +52,132 @@ function addIntineraries(json) {
     }
 }
 
+function clearItineraryContent() {
+    document.getElementById("itinerary-placeholder").innerHTML = "";
+}
+
 function addItineraryContent(json, num = 0) {
-    
+    const itinerary = json.data.plan.itineraries[num];
+
+    document.getElementById(`itinerary-placeholder`).innerHTML += `<div class="itinerary-content" id="itinerary-content_${num}"></div>`;
+
+    const start =
+    `<div class="place" id="place_${num}_0">
+        <span class="time-date">${FormatTime(itinerary.startTime)}<br><span class="date">${FormatDate(itinerary.startTime)}</span></span>
+        <span class="stop-container"><span class="line-walk-place"></span><span class="line-stop-end" style="background-image: url(img/a_icon.png);"></span></span>
+        <div class="label-content"><span class="name">${json.data.plan.from.name}</span><p class="subtext"></p></div>
+    </div>`;
+
+    document.getElementById(`itinerary-content_${num}`).innerHTML += start;
+
+    var place_count = 1;
+    var route_count = 0;
+    var endTime = 0;
+    var walkDistance = 0;
+    var walkDuration = 0;
+    var prevStep = "START";
+
+    for (let i = 0; i < itinerary.steps.length; i++) {
+        const step = itinerary.steps[i];
+
+        if (step.mode == "WALK") {
+            walkDuration += step.duration;
+            walkDistance += step.distance;
+            prevStep = (prevStep == "START" ? "START" : "WALK");
+        }
+        else {
+            if (prevStep == "START") {
+                const walk =
+                `<div class="mode-walk">
+                    <span class="time"></span>
+                    <span class="line-walk"></span>
+                    <div class="content"><div class="desc"><div class="walk-icon"><span class="route" style="background-image: url(img/walk.png);"></span></div><div class="walk-desc">${FormatDuration(walkDuration + 60000, 1)} séta (${Math.floor(walkDistance)} m)</div></div></div>
+                </div>`;
+
+                document.getElementById(`itinerary-content_${num}`).innerHTML += walk;
+                walkDuration = 0;
+                walkDistance = 0;
+            }
+            else if (prevStep == "WALK") {
+                const walk =
+                `<div class="mode-walk">
+                    <span class="time"></span>
+                    <span class="line-walk"></span>
+                    <div class="content"><div class="desc"><div class="walk-icon"><span class="route" style="background-image: url(img/walk.png);"></span></div><div class="walk-desc">${FormatDuration(walkDuration + 60000, 1)} séta (${Math.floor(walkDistance)} m, ${FormatDuration(step.startTime - endTime - walkDuration, 1)} várakozás)</div></div></div>
+                </div>`;
+
+                document.getElementById(`itinerary-content_${num}`).innerHTML += walk;
+                walkDuration = 0;
+                walkDistance = 0;
+            }
+            else {
+                const walk =
+                `<div class="mode-walk">
+                    <span class="time"></span>
+                    <span class="line-walk"></span>
+                    <div class="content"><div class="desc"><div class="walk-icon"><span class="route" style="background-image: url(img/walk.png);"></span></div><div class="walk-desc">átszállás helyben (x várakozás)</div></div></div>
+                </div>`;
+
+                document.getElementById(`itinerary-content_${num}`).innerHTML += walk;
+            }
+
+            const routeColor = step.routeColor;
+
+            const route =
+            `<div class="place">
+                <span class="time">${FormatTime(step.startTime)}<br></span>
+                <span class="stop-container"><span class="line-route-place"  style="background-color: ${routeColor}"></span><span class="line-stop-route" style="background-color: ${routeColor}"></span></span>
+                <div class="label-content"><span class="name">${step.from.name}</span></div>
+            </div>
+            <div class="mode-route">
+                <span class="time"></span>
+                <span class="line-route" style="background-color: ${routeColor}"></span>
+                <div class="content">
+                    <div class="desc">
+                       <div class="route-icon${step.mode == "RAIL" || step.mode == "SUBWAY" ? "-circle" : ""}"><span class="route" style="background-image: url(img/${step.mode.toLowerCase()}.png);"></span><span class="route-label-box${step.mode == "RAIL" || step.mode == "SUBWAY" ? "-circle" : ""}" style="background-color: ${routeColor}; color: ${step.routeTextColor};">${step.mode == "RAIL" || step.mode == "SUBWAY" ? step.route.substr(1) : step.route}</span><span class="arrow"></span></div>
+                       <div class="route-desc">${step.headsign}</div>
+                    </div>
+                    <p class="subtext">${FormatDuration(step.duration, 1)} (<span class="stops">${step.stops.length + 1} megálló</span>)</p>
+                </div>
+            </div>
+            <div class="place">
+                <span class="time">${FormatTime(step.endTime)}<br></span>
+                <span class="stop-container"><span class="line-walk-place"></span><span class="line-stop-route" style="background-color: ${routeColor}"></span></span>
+                <div class="label-content"><span class="name">${step.to.name}</span></div>
+            </div>`;
+
+            document.getElementById(`itinerary-content_${num}`).innerHTML += route;
+            prevStep = step.mode;
+            endTime = step.endTime;
+        }
+    }
+
+    const walk =
+    `<div class="mode-walk">
+        <span class="time"></span>
+        <span class="line-walk"></span>
+        <div class="content"><div class="desc"><div class="walk-icon"><span class="route" style="background-image: url(img/walk.png);"></span></div><div class="walk-desc">${FormatDuration(walkDuration + 60000, 1)} séta (${Math.floor(walkDistance)} m)</div></div></div>
+    </div>`;
+
+    document.getElementById(`itinerary-content_${num}`).innerHTML += walk;
+
+    const end =
+    `<div class="place" id="place_${num}_0">
+        <span class="time-date">${FormatTime(itinerary.endTime)}<br><span class="date">${FormatDate(itinerary.endTime)}</span></span>
+        <span class="stop-container"><span class="line-stop-end" style="background-image: url(img/b_icon.png);"></span></span>
+        <div class="label-content"><span class="name">${json.data.plan.to.name}</span><p class="subtext"></p></div>
+    </div>`;
+    document.getElementById(`itinerary-content_${num}`).innerHTML += end;
+}
+
+function ShowItineraryContent(num = 0) {
+    clearItineraryContent();
+    addItineraryContent(json, num);
+}
+
+function ShowRoute(num = 0) {
+    removeRoute();
+    addRoute(json, num);
 }
 
 function FormatTime(time) {
@@ -61,9 +185,14 @@ function FormatTime(time) {
 }
 
 function FormatDuration(duration, format = 0) {
-    return (((new Date(duration)).getUTCHours() > 0) ? (new Date(duration)).getUTCHours() + (format == 0 ? "ó " : "óra ") : "") + (new Date(duration)).getMinutes() + (format == 0 ? "p" : "perc");
+    return (((new Date(duration)).getUTCHours() > 0) ? (new Date(duration)).getUTCHours() + (format == 0 ? "ó " : " óra ") : "") + (new Date(duration)).getMinutes() + (format == 0 ? "p" : " perc");
+}
+
+function FormatDate(date) {
+    const months = ["jan", "febr", "márc", "ápr", "máj", "jún", "júl", "aug", "szept", "okt", "nov", "dec"];
+    return months[(new Date(date).getMonth())] + " " + (new Date(date).getDate()) + ".";
 }
 
 function clearIntineraries() {
-    document.getElementById("itineraries").innerHTML = ""; 
+    document.getElementById("itineraries").innerHTML = "";
 }

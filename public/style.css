@@ -378,6 +378,11 @@ li {
     min-width: 80px;
 }
 
+.route-icon-circle {
+    display: table-cell;
+    min-width: 64px;
+}
+
 .route-desc {
     font-size: 15px;
     font-weight: 400;
