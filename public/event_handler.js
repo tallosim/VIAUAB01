@@ -36,7 +36,7 @@ function addIntineraries(json) {
         document.getElementById(`itinerary${i}`).innerHTML = `<li id="${i}_0"><span class="route" style="background-image: url(img/walk.png);"></span></li>`;
         var preStep = "WALK";
         const steps = itinerary.steps;
-        for (let j = 1; j < steps.length; j++) {
+        for (let j = 0; j < steps.length; j++) {
             const step = steps[j];
             if (step.mode == "WALK" && preStep != "WALK") {
                 document.getElementById(`itinerary${i}`).innerHTML += `<li  id="${i}_${j}"><span class="arrow"></span><span class="route" style="background-image: url(img/walk.png);"></span></li>`;

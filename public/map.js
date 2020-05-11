@@ -81,7 +81,7 @@ function addRoute(json, num = 0) {
 
       var stops = { "type": "MultiPoint", "coordinates": [] };
       stops.coordinates = element.stops;
-      var stopsStyle = { "color": "", "radius": 3, "weight": 1, "fillColor": "#FFFFFF", "fillOpacity": 1 };
+      var stopsStyle = { "color": "", "radius": 4, "weight": 1, "fillColor": "#FFFFFF", "fillOpacity": 1 };
       stopsStyle.color = element.routeColor;
       var geoJSON = L.geoJSON(stops, { pointToLayer: function (feature, latlng) { return L.circleMarker(latlng, stopsStyle); } }).addTo(layerGroup);
       layerIDs.push(L.stamp(geoJSON));

@@ -101,10 +101,10 @@ function MakeTripResponse($url_query, $link)
     $length = count($route->stops) - 1;
     $route->to = ["lat" => $route->stops[$length][1], "lon" => $route->stops[$length][0]];
 
-    $coordinates = GetTripShapeMySQL($link, $url_query["tripId"], $url_query["fromStopIndex"], $url_query["toStopIndex"]);
-    while ($coordinate =  mysqli_fetch_array($coordinates)) {
-        array_push($route->geometry, [$coordinate["lon"], $coordinate["lat"]]);
-    }
+    // $coordinates = GetTripShapeMySQL($link, $url_query["tripId"], $url_query["fromStopIndex"], $url_query["toStopIndex"]);
+    // while ($coordinate =  mysqli_fetch_array($coordinates)) {
+    //     array_push($route->geometry, [$coordinate["lon"], $coordinate["lat"]]);
+    // }
 
     array_push($itinerary->steps, $route);
     array_push($response->data->plan->itineraries, $itinerary);
@@ -170,19 +170,19 @@ function MakeResponse($url_query, $link)
                         $route->mode = "NIGHTBUS";
                     }
 
-                    // $coordinates = GooglePolylineDecode($leg->legGeometry->points);
-                    // for ($i = 0; $i < $leg->legGeometry->length; $i++) {
-                    //     array_push($route->geometry, [$coordinates[2 * $i + 1], $coordinates[2 * $i]]);
-                    // }
-
-                    $coordinates = GetTripShapeMySQL($link, $route->tripId, $route->from->stopIndex, $route->to->stopIndex, $route->route == "979" ? 1 : 0);
-                    while ($coordinate =  mysqli_fetch_array($coordinates)) {
-                        array_push($route->geometry, [$coordinate["lon"], $coordinate["lat"]]);
-                    }
-
                     $coordinates = GetStopsMySQL($link, $route->tripId, $route->from->stopIndex, $route->to->stopIndex);
                     while ($coordinate =  mysqli_fetch_array($coordinates)) {
                         array_push($route->stops, [$coordinate["lon"], $coordinate["lat"]]);
+                    }
+
+                                        // $coordinates = GooglePolylineDecode($leg->legGeometry->points);
+                    // for ($i = 0; $i < $leg->legGeometry->length; $i++) {
+                    //     array_push($route->geometry, [$coordinates[2 * $i + 1], $coordinates[2 * $i]]);
+                    // }
+                    
+                    $coordinates = GetTripShapeMySQL($link, $route->tripId, $route->from->stopCode, $route->to->stopCode);
+                    while ($coordinate =  mysqli_fetch_array($coordinates)) {
+                        array_push($route->geometry, [$coordinate["lon"], $coordinate["lat"]]);
                     }
 
                     array_push($itinerary->steps, $route);
@@ -208,27 +208,42 @@ function GetStopsMySQL($link, $tripId, $fromStopIndex, $toStopIndex, $offset = 1
     FROM stops s 
     INNER JOIN stop_times st ON st.stop_id = s.stop_id 
     WHERE st.trip_id = "%s" AND st.stop_sequence BETWEEN %s AND %s 
-    ORDER BY st.stop_sequence;', mysqli_real_escape_string($link, $tripId), mysqli_real_escape_string($link, $fromStopIndex + $offset), mysqli_real_escape_string($link, $toStopIndex - $offset));
+    ORDER BY st.stop_sequence;',
+    mysqli_real_escape_string($link, $tripId), mysqli_real_escape_string($link, $fromStopIndex + $offset), mysqli_real_escape_string($link, $toStopIndex - $offset));
 
     $result = mysqli_query($link, $SQL_query);
     return $result;
 }
 
-function GetTripShapeMySQL($link, $tripId, $fromStopIndex = 0, $toStopIndex = 100, $offset = 0)
+function GetTripShapeMySQL($link, $tripId, $fromStopCode, $toStopCode)
 {
-    $SQL_query = sprintf('SELECT s.shape_pt_sequence AS "seq" FROM shapes s INNER JOIN trips t on t.shape_id = s.shape_id WHERE t.trip_id = "%s" ORDER BY s.shape_dist_traveled LIMIT 1;', mysqli_real_escape_string($link, $tripId));
-    $result = mysqli_fetch_array(mysqli_query($link, $SQL_query))[0];
+    $tripId = mysqli_real_escape_string($link, $tripId);
 
-    $fromStopIndex = ($fromStopIndex >= 10 ? ($fromStopIndex + 1 + $offset) * round($result, -1) : ($fromStopIndex + 1) * round($result, -1));
-    $toStopIndex = ($toStopIndex >= 10 ? ($toStopIndex + 1 + $offset) * round($result, -1) : ($toStopIndex + 1) * round($result, -1));
-    
+    $fromShapeSeq = GetTripShapeSeqMySQL($link, $tripId, $fromStopCode);
+    $toShapeSeq = GetTripShapeSeqMySQL($link, $tripId, $toStopCode);
+
     $SQL_query = sprintf('SELECT s.shape_pt_lat AS "lat", s.shape_pt_lon AS "lon"
     FROM shapes s 
     INNER JOIN trips t on t.shape_id = s.shape_id 
     WHERE t.trip_id = "%s" AND s.shape_pt_sequence BETWEEN %s AND %s
-    ORDER BY s.shape_dist_traveled;', mysqli_real_escape_string($link, $tripId), mysqli_real_escape_string($link, $fromStopIndex), mysqli_real_escape_string($link, $toStopIndex));
+    ORDER BY s.shape_dist_traveled;',
+    $tripId, $fromShapeSeq, $toShapeSeq);
 
     $result = mysqli_query($link, $SQL_query);
     return $result;
+}
+
+function GetTripShapeSeqMySQL($link, $tripId, $stopCode)
+{
+    $stopCode = mysqli_real_escape_string($link, $stopCode);
+    $SQL_query = sprintf('SELECT s.shape_pt_sequence AS "seq"
+    FROM shapes s 
+    INNER JOIN trips t on t.shape_id = s.shape_id 
+    WHERE t.trip_id = "%s" AND s.shape_pt_lat = (SELECT s.stop_lat FROM stops s WHERE s.stop_id = "%s") AND s.shape_pt_lon = (SELECT s.stop_lon FROM stops s WHERE s.stop_id = "%s")
+    ORDER BY s.shape_dist_traveled;',
+    $tripId, $stopCode, $stopCode);
+
+    $result = mysqli_fetch_array(mysqli_query($link, $SQL_query))[0];
+    return $result;   
 }
 ?>
