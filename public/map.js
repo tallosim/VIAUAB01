@@ -36,19 +36,25 @@ function makeRequest(params = read_data(), type = "plan-trip") {
   loadingShow();
   clearIntineraries();
   loadJSON(params, type, function (response) {
-    json = JSON.parse(response);
-    if (json.code == 200) {
-      ShowRoute();
-      ShowItineraryContent();
-      setAIcon(L.latLng(json.data.plan.from.lat, json.data.plan.from.lon));
-      setBIcon(L.latLng(json.data.plan.to.lat, json.data.plan.to.lon));
-      type == "plan-trip" ? addIntineraries(json) : 0;
+    if (response != "ERROR") {
+      json = JSON.parse(response);
+      if (json.code == 200) {
+        ShowRoute();
+        ShowItineraryContent();
+        setAIcon(L.latLng(json.data.plan.from.lat, json.data.plan.from.lon));
+        setBIcon(L.latLng(json.data.plan.to.lat, json.data.plan.to.lon));
+        type == "plan-trip" ? addIntineraries(json) : 0;
+      }
+      if (json.code == 400 || json.code == 500) {
+        document.getElementById("planner-from").value = "";
+        document.getElementById("planner-to").value = "";
+        loadingHide();
+        alert("Az útvonaltervezés nem lehetséges. Probálja meg az útvonaltervezést más paraméterekkel.");
+      }
     }
-    if (json.code == 400 || json.code == 500) {
-      document.getElementById("planner-from").value = "";
-      document.getElementById("planner-to").value = "";
+    else {
       loadingHide();
-      alert("Az utazás nem lehetséges. Probálja meg az útvonaltervezést más paraméterekkel.");
+      alert("Az útvonaltervezés nem lehetséges. Probálja meg az útvonaltervezést más paraméterekkel.");
     }
   });
 }

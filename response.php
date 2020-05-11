@@ -22,7 +22,8 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
         $url_query["fromStopIndex"] = trim($_GET["fromStopIndex"]);
         $url_query["toStopIndex"] = trim($_GET["toStopIndex"]);
     } else {
-        echo "ERROR";
+        $response = array("code" => 500, "status" => "ERROR", "text" => "URL query ERROR!");
+        echo json_encode($response);
     }
 }
 
@@ -37,7 +38,6 @@ function GetBKKApi($url_query)
     $response = curl_exec($ch);
     curl_close($ch);
 
-    //echo $response;
     return $response;
 }
 
@@ -178,14 +178,10 @@ function MakeResponse($url_query, $link)
         echo json_encode($response);
     }
     if ($bkk_response->code == 400) {
-        //valami nem jó itt
-
         $response = array("code" => 400, "status" => $bkk_response->status, "text" => $bkk_response->text);
         echo json_encode($response);
     }
     if ($bkk_response->code == 500) {
-        //valami nem jó itt
-
         $response = array("code" => 500, "status" => $bkk_response->status, "text" => $bkk_response->text);
         echo json_encode($response);
     }

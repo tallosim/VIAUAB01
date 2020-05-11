@@ -29,7 +29,7 @@ function addIntineraries(json) {
         const duration = FormatDuration(itinerary.duration + 60000);
         const distance = Math.floor(itinerary.walkDistance);
 
-        var itineraryHTML = `<div class="itinerary" onclick="ShowRoute(${i}); ShowItineraryContent(${i});"><div class="span-itinerary"><p class="p-itinerary">${startTime} ⇒ ${endTime}, ${distance} m séta <span class="right">${duration}</span></p><ul class="route-list" id="itinerary${i}"></ul></div></div>`;
+        var itineraryHTML = `<div class="itinerary" id="itinerary_${i}" onclick="ShowRoute(${i}); ShowItineraryContent(${i}); SelectItinerary(${i});"><div class="span-itinerary"><p class="p-itinerary">${startTime} ⇒ ${endTime}, ${distance} m séta <span class="right">${duration}</span></p><ul class="route-list" id="itinerary${i}"></ul></div></div>`;
         document.getElementById("itineraries").innerHTML += itineraryHTML;
 
         //steps
@@ -50,6 +50,7 @@ function addIntineraries(json) {
             preStep = step.mode;
         }
     }
+    SelectItinerary();
 }
 
 function clearItineraryContent() {
@@ -115,7 +116,7 @@ function addItineraryContent(json, num = 0) {
                 `<div class="mode-walk">
                     <span class="time"></span>
                     <span class="line-walk"></span>
-                    <div class="content"><div class="desc"><div class="walk-icon"><span class="route" style="background-image: url(img/walk.png);"></span></div><div class="walk-desc">átszállás helyben (x várakozás)</div></div></div>
+                    <div class="content"><div class="desc"><div class="walk-icon"><span class="route" style="background-image: url(img/walk.png);"></span></div><div class="walk-desc">átszállás helyben (${FormatDuration(step.startTime - endTime, 1)} várakozás)</div></div></div>
                 </div>`;
 
                 document.getElementById(`itinerary-content_${num}`).innerHTML += walk;
@@ -180,6 +181,15 @@ function ShowRoute(num = 0) {
     addRoute(json, num);
 }
 
+function SelectItinerary(num = 0) {
+    for (let index = 0; index < json.data.plan.itineraries.length; index++) {
+        document.getElementById(`itinerary_${index}`).style.border = "1px solid #555555";
+        document.getElementById(`itinerary_${index}`).style.backgroundColor = "#FFFFFF";
+    }
+    document.getElementById(`itinerary_${num}`).style.border = "1px dashed #693070";
+    document.getElementById(`itinerary_${num}`).style.backgroundColor = "#EEEEEE";
+}
+
 function FormatTime(time) {
     return pad((new Date(time)).getHours()) + ":" + pad((new Date(time)).getMinutes());
 }
@@ -200,8 +210,14 @@ function GetAddress(address) {
     else if (address.road) {
         return address.road;
     }
-    else if (address.name) {
-        return address.name;
+    else if (address.footway && address.house_number) {
+        return address.footway + " " + address.house_number;
+    }
+    else if (address.footway) {
+        return address.footway;
+    }
+    else {
+        return address.suburb;
     }
 }
 function GetSubAddress(address) {
