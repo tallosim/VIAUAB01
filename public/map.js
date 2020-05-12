@@ -35,6 +35,7 @@ function loadJSON(params, type, callback) {
 function makeRequest(params = read_data(), type = "plan-trip") {
   loadingShow();
   clearIntineraries();
+  clearItineraryContent();
   loadJSON(params, type, function (response) {
     if (response != "ERROR") {
       json = JSON.parse(response);
@@ -103,7 +104,7 @@ function addRoute(json, num = 0) {
     }
   });
   loadingHide();
-  map.flyToBounds(bounds, { paddingTopLeft: L.point(390, 30), paddingBottomRight: L.point(30, 30), duration: 0.5, easeLinearity: 0.95 });
+  map.flyToBounds(bounds, { paddingTopLeft: L.point(390, 30), paddingBottomRight: L.point(30, 30), duration: 0.5, easeLinearity: 0.99 });
 }
 
 

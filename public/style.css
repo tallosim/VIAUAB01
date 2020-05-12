@@ -163,12 +163,11 @@ label {
     padding-left: 15px;
 }
 
-.results-content {
+#results-content {
     padding-right: 15px;
     overflow-x: hidden;
     overflow-y: scroll;
     position: relative;
-    height: 565px;
 }
 
 .itinerary {
@@ -287,7 +286,7 @@ li {
     padding-top: 4px;
     text-align: right;
     vertical-align: top;
-    width: 3.5em;
+    width: 39px;
 }
 
 .date {
@@ -389,7 +388,7 @@ li {
     line-height: 14px;
     vertical-align: middle;
     padding-left: 5px;
-    max-width: 100px;
+    max-width: 140px;
     display: table-cell;
 }
 
@@ -410,7 +409,7 @@ li {
     padding-right: 2px;
     text-align: right;
     vertical-align: top;
-    width: 59px;
+    width: 39px;
 }
 
 .line-stop-route {
@@ -448,7 +447,7 @@ li {
     margin-top: 20px;
     width: 24px;
     top: -2px;
-    height: 11px;
+    height: 20px;
 }
 
 .subtext {
@@ -461,4 +460,9 @@ li {
 
 .stops {
     color: #4c0e5f;
+}
+
+.route-icon-time {
+    vertical-align: middle;
+    display: table-cell;
 }

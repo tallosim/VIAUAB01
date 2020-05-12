@@ -135,10 +135,12 @@ function addItineraryContent(json, num = 0) {
                 <span class="line-route" style="background-color: ${routeColor}"></span>
                 <div class="content">
                     <div class="desc">
-                       <div class="route-icon${step.mode == "RAIL" || step.mode == "SUBWAY" ? "-circle" : ""}"><span class="route" style="background-image: url(img/${step.mode.toLowerCase()}.png);"></span><span class="route-label-box${step.mode == "RAIL" || step.mode == "SUBWAY" ? "-circle" : ""}" style="background-color: ${routeColor}; color: ${step.routeTextColor};">${step.mode == "RAIL" || step.mode == "SUBWAY" ? step.route.substr(1) : step.route}</span><span class="arrow"></span></div>
-                       <div class="route-desc">${step.headsign}</div>
+                        <div class="route-icon-time">
+                            <div class="route-icon${step.mode == "RAIL" || step.mode == "SUBWAY" ? "-circle" : ""}"><span class="route" style="background-image: url(img/${step.mode.toLowerCase()}.png);"></span><span class="route-label-box${step.mode == "RAIL" || step.mode == "SUBWAY" ? "-circle" : ""}" style="background-color: ${routeColor}; color: ${step.routeTextColor};">${step.mode == "RAIL" || step.mode == "SUBWAY" ? step.route.substr(1) : step.route}</span><span class="arrow"></span></div>
+                            <p class="subtext">${FormatDuration(step.duration, 1)} (<span class="stops">${step.stops.length + 1} megálló</span>)</p>
+                        </div>
+                        <div class="route-desc">${step.headsign}</div>
                     </div>
-                    <p class="subtext">${FormatDuration(step.duration, 1)} (<span class="stops">${step.stops.length + 1} megálló</span>)</p>
                 </div>
             </div>
             <div class="place">
@@ -231,4 +233,9 @@ function GetSubAddress(address) {
 
 function clearIntineraries() {
     document.getElementById("itineraries").innerHTML = "";
+}
+
+function SetReultsHeight() {
+    document.getElementById("results-content").style.height = (window.innerHeight - 375) + "px";
+    console.log(document.getElementById("results-content").style.height);
 }
