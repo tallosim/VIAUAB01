@@ -47,8 +47,6 @@ function makeRequest(params = read_data(), type = "plan-trip") {
         type == "plan-trip" ? addIntineraries(json) : 0;
       }
       if (json.code == 400 || json.code == 500) {
-        document.getElementById("planner-from").value = "";
-        document.getElementById("planner-to").value = "";
         loadingHide();
         alert("Az útvonaltervezés nem lehetséges. Probálja meg az útvonaltervezést más paraméterekkel.");
       }

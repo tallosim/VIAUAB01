@@ -22,7 +22,7 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
         $url_query["fromStopIndex"] = trim($_GET["fromStopIndex"]);
         $url_query["toStopIndex"] = trim($_GET["toStopIndex"]);
     } else {
-        $response = array("code" => 500, "status" => "ERROR", "text" => "URL query ERROR!");
+        $response = array("code" => 500, "status" => "ERROR", "text" => "URL QUERY ERROR!");
         echo json_encode($response);
     }
 }
@@ -153,13 +153,15 @@ function MakeResponse($url_query, $link)
                         $route->mode = "NIGHTBUS";
                     }
 
-                    $coordinates = GetStopsMySQL($link, $route->tripId, $route->from->stopIndex, $route->to->stopIndex);
-                    if ($coordinates == "ERROR") {
-                        $response = array("code" => 500, "status" => $bkk_response->status, "text" => $bkk_response->text);
-                        return json_encode($response);
-                    }
-                    while ($coordinate =  mysqli_fetch_array($coordinates)) {
-                        array_push($route->stops, [$coordinate["lon"], $coordinate["lat"]]);
+                    if ($route->to->stopIndex - $route->from->stopIndex > 1) {
+                        $coordinates = GetStopsMySQL($link, $route->tripId, $route->from->stopIndex, $route->to->stopIndex);
+                        if ($coordinates == "SQL STOPS ERROR") {
+                            $response = array("code" => 500, "status" => "ERROR", "text" => "SQL STOPS ERROR");
+                            return json_encode($response);
+                        }
+                        while ($coordinate =  mysqli_fetch_array($coordinates)) {
+                            array_push($route->stops, [$coordinate["lon"], $coordinate["lat"]]);
+                        }
                     }
 
                     // $coordinates = GooglePolylineDecode($leg->legGeometry->points);
@@ -168,8 +170,8 @@ function MakeResponse($url_query, $link)
                     // }
 
                     $coordinates = GetTripShapeMySQL($link, $route->tripId, $route->from->stopCode, $route->to->stopCode);
-                    if ($coordinates == "ERROR") {
-                        $response = array("code" => 500, "status" => $bkk_response->status, "text" => $bkk_response->text);
+                    if ($coordinates == "SQL SHAPE ERROR") {
+                        $response = array("code" => 500, "status" => "ERROR", "text" => "SQL SHAPE ERROR");
                         return json_encode($response);
                     }
                     while ($coordinate =  mysqli_fetch_array($coordinates)) {
@@ -210,7 +212,7 @@ function GetStopsMySQL($link, $tripId, $fromStopIndex, $toStopIndex, $offset = 1
 
     $result = mysqli_query($link, $SQL_query);
     if (mysqli_num_rows($result) == 0) {
-        return "ERROR";
+        return "SQL STOPS ERROR";
     }
     return $result;
 }
@@ -222,8 +224,8 @@ function GetTripShapeMySQL($link, $tripId, $fromStopCode, $toStopCode)
     $fromShapeSeq = GetTripShapeSeqMySQL($link, $tripId, $fromStopCode);
     $toShapeSeq = GetTripShapeSeqMySQL($link, $tripId, $toStopCode);
 
-    if ($fromShapeSeq == "ERROR" || $toShapeSeq == "ERROR") {
-        return "ERROR";
+    if ($fromShapeSeq == "SQL SHAPE ERROR" || $toShapeSeq == "SQL SHAPE ERROR") {
+        return "SQL SHAPE ERROR";
     }
 
     $SQL_query = sprintf(
@@ -272,7 +274,7 @@ function GetTripShapeSeqMySQL($link, $tripId, $stopCode)
     }
 
     if($count > 10) {
-        return "ERROR";
+        return "SQL SHAPE ERROR";
     }   
     else {
         return mysqli_fetch_array($result)[0];

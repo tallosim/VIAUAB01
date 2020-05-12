@@ -83,7 +83,7 @@ function addItineraryContent(json, num = 0) {
 
         if (step.mode == "WALK") {
             walkDuration += step.duration;
-            walkDistance += step.distance;
+            walkDistance += (step.distance == 0 ? (new Date(step.duration)).getUTCMinutes() * 80 + (new Date(step.duration)).getUTCSeconds() * 1.25 : step.distance);
             prevStep = (prevStep == "START" ? "START" : "WALK");
         }
         else {
@@ -138,7 +138,7 @@ function addItineraryContent(json, num = 0) {
                         <div class="route-icon-time">
                             <div class="route-icon${step.mode == "RAIL" || step.mode == "SUBWAY" ? "-circle" : ""}"><span class="route" style="background-image: url(img/${step.mode.toLowerCase()}.png);"></span><span class="route-label-box${step.mode == "RAIL" || step.mode == "SUBWAY" ? "-circle" : ""}" style="background-color: ${routeColor}; color: ${step.routeTextColor};">${step.mode == "RAIL" || step.mode == "SUBWAY" ? step.route.substr(1) : step.route}</span><span class="arrow"></span></div>
                             <p class="subtext">${FormatDuration(step.duration, 1)} (<span class="stops">${step.stops.length + 1} megálló</span>)</p>
-                        </div>
+                            </div>
                         <div class="route-desc">${step.headsign}</div>
                     </div>
                 </div>
