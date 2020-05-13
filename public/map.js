@@ -37,7 +37,6 @@ function makeRequest(params = read_data(), type = "plan-trip") {
   clearIntineraries();
   clearItineraryContent();
   loadJSON(params, type, function (response) {
-    console.log(response);
     if (response != "ERROR") {
       json = JSON.parse(response);
       if (json.code == 200) {

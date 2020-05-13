@@ -237,7 +237,6 @@ function clearIntineraries() {
 
 function SetReultsHeight() {
     document.getElementById("results-content").style.height = (window.innerHeight - 375) + "px";
-    console.log(document.getElementById("results-content").style.height);
 }
 
 function UpdateDatabase() {
