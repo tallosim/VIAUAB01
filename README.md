@@ -11,5 +11,5 @@ Készítette: Tallósi Máté (EQGE5J)
 **Adatok:** [BKK GTFS](https://bkk.hu/apps/gtfs/)
 
 ## Webalkalmazás használata
-**Demo:** [talli.ddns.net](http://talli.ddns.net/gtfs_web/public/index.html)
+**Demo:** [talli.ddns.net](http://talli.ddns.net)
 Bal gomb lenyomásával az indulási hely adható meg, jobb gomb lenyomásával, pedig az érkezési hely adható meg.
