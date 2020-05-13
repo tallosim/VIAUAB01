@@ -239,3 +239,24 @@ function SetReultsHeight() {
     document.getElementById("results-content").style.height = (window.innerHeight - 375) + "px";
     console.log(document.getElementById("results-content").style.height);
 }
+
+function UpdateDatabase() {
+    if (confirm("Biztos, hogy szeretnéd frissíteni az adatbázist?\nEz a folyamat több percbe telhet.")) {
+        loadingShow();
+        CallDatabaseUpdate(function(response) {
+            alert(response);
+            loadingHide();
+        });
+    }
+}
+
+function CallDatabaseUpdate(callback) {
+    var xobj = new XMLHttpRequest();
+    xobj.open("GET", "../update.php", true);
+    xobj.onreadystatechange = function () {
+      if (xobj.readyState == 4 && xobj.status == "200") {
+        callback(xobj.responseText);
+      }
+    };
+    xobj.send(null);
+  }

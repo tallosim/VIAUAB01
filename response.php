@@ -1,6 +1,10 @@
 <?php
 require_once "config.php";
-if (isset($_GET["type"]) && !empty($_GET["type"])) {
+if (GetStatus()) {
+    $response = array("code" => 500, "status" => "ERROR", "text" => "Database updateing!");
+    echo json_encode($response);
+}
+else if (isset($_GET["type"]) && !empty($_GET["type"])) {
     if ($_GET["type"] == "plan-trip" && isset($_GET["fromPlace"]) && !empty($_GET["fromPlace"]) && isset($_GET["toPlace"]) && !empty($_GET["toPlace"]) && isset($_GET["date"]) && !empty($_GET["date"]) && isset($_GET["time"])) {
         $url_query = array("fromPlace" => "", "toPlace" => "", "date" => "", "time" => "");
 
