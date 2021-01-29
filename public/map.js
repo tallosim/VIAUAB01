@@ -1,4 +1,5 @@
-var tile = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGFsbG9zaW0iLCJhIjoiY2s5MXRrY3l4MDE0YjNtbzN2bzFheG1kOSJ9.lIaNhU10l-a4t6qTDh_HzQ', { id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: '<a onclick="UpdateDatabase()" style="cursor: pointer">Update database</a>' });
+const access_token = '<ACCESS_TOKEN>'
+var tile = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' + access_token, { id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: '<a onclick="UpdateDatabase()" style="cursor: pointer">Update database</a>' });
 var map = L.map('map', { center: [47.497798, 19.040324], zoom: 13, layers: [tile], zoomControl: false });
 var layerGroup = L.layerGroup().addTo(map);
 

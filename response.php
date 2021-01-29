@@ -10,7 +10,7 @@ if ($_GET["type"] == "plan-trip" && isset($_GET["fromPlace"]) && !empty($_GET["f
     if (!empty($_GET["time"])) {
         $url_query["time"] = trim($_GET["time"]);
     }
-    echo MakeResponse($url_query);
+    echo MakeBKKResponse($url_query);
 } else if ($_GET["type"] == "trip" & isset($_GET["tripId"]) && !empty($_GET["tripId"])) {
     $url_query = array("tripId" => "", "fromStopIndex" => "", "toStopIndex" => "");
 
@@ -82,7 +82,7 @@ function GooglePolylineDecode($string)
     return $points;
 }
 
-function MakeResponse($url_query)
+function MakeBKKResponse($url_query)
 {
     $bkk_response = json_decode(GetBKKApi($url_query));
 
